@@ -11,9 +11,6 @@
 -compile(export_all).
 
 %% Function type to generate an integer between the lower and upper bounds
-%% XXX: At the moment, we're not handling this case, but to be a true
-%% bingo board the same number should not be repeated
-%% -type genfun() :: fun((non_neg_integer(), non_neg_integer()) -> non_neg_integer()).
 -type genfun() :: fun((non_neg_integer(), non_neg_integer(), list(non_neg_integer())) ->
                               { non_neg_integer(), list(non_neg_integer()) }).
 -type card() :: list(column()).
@@ -43,15 +40,9 @@ build_column(Generator, Vals, Min, Max, Wildcard, Rows) ->
     { NewVal, RemainingVals } = Generator(Min, Max, Vals),
     build_column(Generator, RemainingVals, Min, Max, Wildcard, [ NewVal | Rows ]).
 
-%% -spec random_generator() -> genfun().
-%% random_generator() ->
-%%     { A1, A2, A3 } = now(),
-%%     random:seed(A1, A2, A3),
-%%     fun(X, Y) ->
-%%             Normalize = X - 1,
-%%             X + random:uniform(Y - Normalize)
-%%     end.
-
+%%
+%% Function is a bit more complex than it would need to be if we
+%% didn't have to prevent repeating values.
 -spec random_generator() -> genfun().
 random_generator() ->
     { A1, A2, A3 } = now(),
